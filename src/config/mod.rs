@@ -17,7 +17,7 @@ const DEFAULT_FILE_NAME: &str = "config.conf";
 const DEFAULT_DIR_CFG: &str = ".hbc";
 const DEFAULT_BANK_CFG: &str = "default";
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct CategoryMappingConfig {
     pub default: String,
     pub mapping: HashMap<String, Vec<String>>,
@@ -32,20 +32,12 @@ impl Default for CategoryMappingConfig {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct PayeeMappingConfig {
     pub mapping: HashMap<String, Vec<String>>,
 }
 
-impl Default for PayeeMappingConfig {
-    fn default() -> Self {
-        PayeeMappingConfig {
-            mapping: HashMap::default(),
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct BankConfig {
     pub income: String,
     pub category: CategoryMappingConfig,
@@ -63,15 +55,15 @@ impl Default for BankConfig {
 }
 
 pub struct Config {
-    bankConfig: HashMap<String, BankConfig>,
+    bank_config: HashMap<String, BankConfig>,
 }
 
 impl Default for Config {
     fn default() -> Self {
-        let mut bankConfig = HashMap::<String, BankConfig>::with_capacity(1);
-        bankConfig.insert(DEFAULT_BANK_CFG.to_owned(), BankConfig::default());
+        let mut bank_cfg = HashMap::<String, BankConfig>::with_capacity(1);
+        bank_cfg.insert(DEFAULT_BANK_CFG.to_owned(), BankConfig::default());
         Config {
-            bankConfig: bankConfig,
+            bank_config: bank_cfg,
         }
     }
 }
@@ -90,7 +82,7 @@ impl Config {
         }
 
         Ok(Config {
-            bankConfig: load_config(path)?,
+            bank_config: load_config(path)?,
         })
     }
 }
@@ -104,12 +96,4 @@ fn get_default_cfg_dir() -> String {
 
 fn get_default_file_path() -> String {
     format!("{}/{}", get_default_cfg_dir(), DEFAULT_FILE_NAME)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_alias_add_activity_alias() {}
 }

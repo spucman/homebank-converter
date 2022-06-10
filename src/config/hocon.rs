@@ -13,20 +13,20 @@ struct CategoryMapping {
 }
 
 impl CategoryMapping {
-    fn into(&self, baseCfg: &CategoryMappingConfig) -> CategoryMappingConfig {
+    fn into(&self, base_cfg: &CategoryMappingConfig) -> CategoryMappingConfig {
         CategoryMappingConfig {
             default: self
                 .default
                 .as_ref()
-                .map(|v| v.clone())
-                .unwrap_or(baseCfg.default.clone()),
+                .cloned()
+                .unwrap_or_else(|| base_cfg.default.clone()),
             mapping: match self.mapping.as_ref() {
                 Some(v) => {
-                    let mut base = baseCfg.mapping.clone();
+                    let mut base = base_cfg.mapping.clone();
                     base.extend(v.iter().map(|(key, value)| (key.clone(), value.clone())));
                     base
                 }
-                None => baseCfg.mapping.clone(),
+                None => base_cfg.mapping.clone(),
             },
         }
     }
@@ -38,15 +38,15 @@ struct PayeeMapping {
 }
 
 impl PayeeMapping {
-    fn into(&self, baseCfg: &PayeeMappingConfig) -> PayeeMappingConfig {
+    fn into(&self, base_cfg: &PayeeMappingConfig) -> PayeeMappingConfig {
         PayeeMappingConfig {
             mapping: match self.mapping.as_ref() {
                 Some(v) => {
-                    let mut base = baseCfg.mapping.clone();
+                    let mut base = base_cfg.mapping.clone();
                     base.extend(v.iter().map(|(key, value)| (key.clone(), value.clone())));
                     base
                 }
-                None => baseCfg.mapping.clone(),
+                None => base_cfg.mapping.clone(),
             },
         }
     }
@@ -65,18 +65,18 @@ impl Bank {
             income: self
                 .income
                 .as_ref()
-                .map(|v| v.clone())
-                .unwrap_or(base.income.clone()),
+                .cloned()
+                .unwrap_or_else(|| base.income.clone()),
             category: self
                 .category
                 .as_ref()
                 .map(|v| v.into(&base.category))
-                .unwrap_or(base.category.clone()),
+                .unwrap_or_else(|| base.category.clone()),
             payee: self
                 .payee
                 .as_ref()
                 .map(|v| v.into(&base.payee))
-                .unwrap_or(base.payee.clone()),
+                .unwrap_or_else(|| base.payee.clone()),
         }
     }
 }
@@ -115,8 +115,78 @@ mod tests {
 
     #[test]
     fn test_load_config() {
-        let test_cfg = load_config("./test-data/cfg.conf".to_owned());
-
-        println!("{:?}", test_cfg);
+        assert_eq!(
+            load_config("./test-data/cfg.conf".to_owned()),
+            Ok(vec![
+                (
+                    "default".to_owned(),
+                    BankConfig {
+                        income: "Unknown".to_owned(),
+                        category: CategoryMappingConfig {
+                            default: "Unknown".to_owned(),
+                            mapping: vec![(
+                                "Family".to_owned(),
+                                vec!["Joe Doe".to_owned(), "Jill Doe".to_owned()]
+                            )]
+                            .into_iter()
+                            .collect()
+                        },
+                        payee: PayeeMappingConfig {
+                            mapping: vec![(
+                                "joe doe".to_owned(),
+                                vec!["joe doe".to_owned(), "doe joe".to_owned()]
+                            )]
+                            .into_iter()
+                            .collect()
+                        }
+                    }
+                ),
+                (
+                    "bank1".to_owned(),
+                    BankConfig {
+                        income: "Banke Nr. 1".to_owned(),
+                        category: CategoryMappingConfig {
+                            default: "Unknown".to_owned(),
+                            mapping: vec![("Family".to_owned(), vec!["Kill Bill".to_owned()])]
+                                .into_iter()
+                                .collect()
+                        },
+                        payee: PayeeMappingConfig {
+                            mapping: vec![("joe doe".to_owned(), vec!["Kill Bill".to_owned()])]
+                                .into_iter()
+                                .collect()
+                        }
+                    }
+                ),
+                (
+                    "bank2".to_owned(),
+                    BankConfig {
+                        income: "Banke Nr. 2".to_owned(),
+                        category: CategoryMappingConfig {
+                            default: "Whatever".to_owned(),
+                            mapping: vec![
+                                (
+                                    "Family".to_owned(),
+                                    vec!["Joe Doe".to_owned(), "Jill Doe".to_owned()]
+                                ),
+                                ("Friends".to_owned(), vec!["Kill Bill".to_owned()])
+                            ]
+                            .into_iter()
+                            .collect()
+                        },
+                        payee: PayeeMappingConfig {
+                            mapping: vec![(
+                                "joe doe".to_owned(),
+                                vec!["joe doe".to_owned(), "doe joe".to_owned()]
+                            )]
+                            .into_iter()
+                            .collect()
+                        }
+                    }
+                )
+            ]
+            .into_iter()
+            .collect())
+        );
     }
 }

@@ -14,3 +14,12 @@ log = "=0.4.17"
 fern = "=0.6.1"
 serde = {version = "=1.0.137", features = ["derive"] }
 home = "=0.5.3"
+
+[profile.dev]
+debug = true
+
+[profile.test]
+debug = 0
+
+[profile.release]
+panic = 'abort'

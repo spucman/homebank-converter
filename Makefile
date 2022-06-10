@@ -8,7 +8,7 @@ clean:
 
 TESTS = ""
 test:
-	@cargo test $(TESTS) --offline --lib -- --color=always --nocapture
+	@cargo test $(TESTS) --offline -- --color=always --nocapture
 
 docs: build
 	@cargo doc --no-deps
