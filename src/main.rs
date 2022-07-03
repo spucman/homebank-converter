@@ -3,9 +3,10 @@ extern crate log;
 
 use log::LevelFilter;
 
-//mod bank;
-//mod data;
+mod bank;
+mod cli;
 mod config;
+mod data;
 
 fn main() {
     trace!("some trace log");

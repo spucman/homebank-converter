@@ -1,9 +1,15 @@
-use super::homebank::HomebankAccountingLine;
-use crate::data::error::Error::*;
-use crate::data::Result;
+use crate::{
+    bank::{
+        find_payee,
+        homebank::{HomebankAccountingLine, IntoHomebankAccountingLine},
+        look_for_mapping_in_text, switch_key_with_values_of_map, UNKNOWN_PAYEE,
+    },
+    config::BankConfig,
+    data::{error::Error::*, Result},
+};
 use chrono::NaiveDate;
-use csv::ReaderBuilder;
-use csv::StringRecord;
+use csv::{ReaderBuilder, StringRecord};
+use std::collections::HashMap;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct BawagAccountingLine {
@@ -14,10 +20,33 @@ pub struct BawagAccountingLine {
     pub currency: String,
 }
 
-impl From<HomebankAccountingLine> for BawagAccountingLine {
-    fn from(line: HomebankAccountingLine) -> Self {
+impl IntoHomebankAccountingLine for BawagAccountingLine {
+    fn into(self, bank_cfg: &BankConfig) -> HomebankAccountingLine {
+        let payees = switch_key_with_values_of_map(&bank_cfg.payee.mapping);
+        let mut payee_keys: Vec<String> = payees.keys().cloned().collect();
+        payee_keys.sort_by(|a, b| a.len().cmp(&b.len()).reverse());
+
+        let categories = switch_key_with_values_of_map(&bank_cfg.category.mapping);
+        let mut category_keys: Vec<String> = categories.keys().cloned().collect::<Vec<String>>();
+        category_keys.sort_by(|a, b| a.len().cmp(&b.len()).reverse());
+
+        let text_to_search = vec![self.text.clone()];
+
         HomebankAccountingLine {
-            
+            date: self.execution_date,
+            memo: self.text.clone(),
+            amount: self.amount,
+            tags: vec![],
+            payee: find_payee(
+                &payees,
+                &payee_keys,
+                &text_to_search,
+                self.amount,
+                UNKNOWN_PAYEE.to_string(),
+            )
+            .unwrap_or_else(|| UNKNOWN_PAYEE.to_string()),
+            category: look_for_mapping_in_text(&categories, &category_keys, &text_to_search)
+                .unwrap_or_else(|| bank_cfg.category.default.to_owned()),
         }
     }
 }
@@ -28,11 +57,11 @@ pub fn parse_csv(filepath: String) -> Result<Vec<BawagAccountingLine>> {
         .has_headers(false)
         .double_quote(false)
         .from_path(filepath)
-        .map_err(|e| UnableToInitializeCSVReader(e))?;
+        .map_err(UnableToInitializeCSVReader)?;
 
     let result: Vec<BawagAccountingLine> = rdr
         .into_records()
-        .filter_map(|r| convert_to_accounting_line(r))
+        .filter_map(convert_to_accounting_line)
         .collect();
 
     Ok(result)
@@ -58,8 +87,8 @@ fn convert_to_accounting_line(
 
 fn parse_to_number(number: &str) -> f32 {
     number
-        .replace(".", "")
-        .replace(",", ".")
+        .replace('.', "")
+        .replace(',', ".")
         .parse::<f32>()
         .unwrap()
 }

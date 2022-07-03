@@ -8,7 +8,9 @@ Work in progress
 
 * [ ] Improve Error handling (logging)
 * [ ] Configuration
-* [ ] Converter
-  * [ ] Bawag / PSK
-  * [ ] DKB
-  * [ ] Erste
+* [ ] Converting
+  * [ ] Configuration
+  * [ ] Create default config for
+    * [ ] Bawag / PSK
+    * [ ] DKB
+    * [ ] Erste
