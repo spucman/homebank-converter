@@ -119,21 +119,21 @@ mod tests {
                     amount: -15.39,
                     currency: "EUR".to_owned(),
                     text: "Some Text".to_owned(),
-                    execution_date: NaiveDate::from_ymd(2020, 5, 26)
+                    execution_date: NaiveDate::from_ymd_opt(2020, 5, 26).expect("valid date")
                 },
                 BawagAccountingLine {
                     iban: "AT123456789".to_owned(),
                     amount: -880.00,
                     currency: "EUR".to_owned(),
                     text: "Some Other Text".to_owned(),
-                    execution_date: NaiveDate::from_ymd(2020, 5, 25)
+                    execution_date: NaiveDate::from_ymd_opt(2020, 5, 25).expect("valid date")
                 },
                 BawagAccountingLine {
                     iban: "AT123456789".to_owned(),
                     amount: -2.40,
                     currency: "EUR".to_owned(),
                     text: "Some Text with Company GmbH\\\\SOME PLACE\\".to_owned(),
-                    execution_date: NaiveDate::from_ymd(2020, 5, 25)
+                    execution_date: NaiveDate::from_ymd_opt(2020, 5, 25).expect("valid date")
                 }
             ]
         );
@@ -149,7 +149,7 @@ mod tests {
     fn test_parse_to_date() {
         assert_eq!(
             parse_to_date("25.05.2020"),
-            NaiveDate::from_ymd(2020, 5, 25)
+            NaiveDate::from_ymd_opt(2020, 5, 25).expect("valid date")
         );
     }
 }

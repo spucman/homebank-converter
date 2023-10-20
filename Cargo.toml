@@ -5,15 +5,15 @@ authors = ["Stefan Puchmann <spucman.dev@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-csv = "=1.1.6"
-chrono = "=0.4.19"
-clap = "=3.2.6"
-thiserror = "=1.0.31"
+csv = "=1.3.0"
+chrono = "=0.4.31"
+clap = "=4.4.6"
+thiserror = "=1.0.50"
 hocon = { version = "=0.9.0", default-features = false, features = ["serde-support"] }
-log = "=0.4.17"
-fern = "=0.6.1"
-serde = {version = "=1.0.137", features = ["derive"] }
-home = "=0.5.3"
+log = "=0.4.20"
+fern = "=0.6.2"
+serde = {version = "=1.0.189", features = ["derive"] }
+home = "=0.5.5"
 
 [profile.dev]
 debug = true

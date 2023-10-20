@@ -1,6 +1,6 @@
 # Homebank Converter
 
-[![Tests](https://github.com/spucman/homebank-converter/actions/workflows/test.yml/badge.svg)](https://github.com/spucman/homebank-converter/actions/workflows/test.yml)
+[![Tests](https://github.com/spucman/homebank-converter/actions/workflows/build.yml/badge.svg)](https://github.com/spucman/homebank-converter/actions/workflows/build.yml)
 
 Work in progress
 
@@ -14,3 +14,4 @@ Work in progress
     * [ ] Bawag / PSK
     * [ ] DKB
     * [ ] Erste
+* [ ] Build Pipeline
