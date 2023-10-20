@@ -1,6 +1,6 @@
 # Homebank Converter
 
-[![Tests](https://github.com/spucman/homebank-converter/actions/workflows/build.yml/badge.svg)](https://github.com/spucman/homebank-converter/actions/workflows/build.yml)
+[![Build](https://github.com/spucman/homebank-converter/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/spucman/homebank-converter/actions/workflows/build.yml)
 
 Work in progress
 
